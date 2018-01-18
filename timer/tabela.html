@@ -1,0 +1,70 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" href="extjs/resources/css/ext-all.css">
+<script type="text/javascript" src="extjs/ext-all.js"></script>
+<script type="text/javascript" src="extjs/locale/ext-lang-pt_BR.js"></script>
+</head>
+<body style="width: 100%; height: 100%;">
+<input id="dados" type="hidden" value=""/>
+</body>
+<script type="text/javascript">
+
+Ext.require([
+    'Ext.grid.*',
+    'Ext.data.*',
+    'Ext.panel.*',
+    'Ext.layout.container.Border'
+]);
+
+Ext.onReady(function(){
+
+     Ext.define('Acesso', {
+     extend: 'Ext.data.Model',
+     fields: [
+		{name: 'data', type: 'String'},
+        {name: 'site', type: 'String'},
+        {name: 'tempo',  type: 'int'},
+		{name: 'horas', type: 'String'}
+     ]
+	});
+
+    var store = Ext.create('Ext.data.Store', {
+     model: 'Acesso',
+     data : JSON.parse(getParameter("dados"))
+	});
+
+    var grid = Ext.create('Ext.grid.Panel', {
+        bufferedRenderer: false,
+        store: store,
+        columns: [
+            {text: "Data", width: 30, dataIndex: 'data', sortable: true},
+            {text: "Site", width: 200, dataIndex: 'site', sortable: true},
+            {text: "Tempo", width: 30, dataIndex: 'horas', sortable: true}
+        ],
+        forceFit: true,
+        height:210,
+        split: true,
+		columnLines: true
+    });
+        
+    Ext.create('Ext.Panel', {
+        renderTo: Ext.getBody(),
+        width: document.body.style.width,
+        height: document.body.style.height,
+        layout: 'fit',
+        items: grid
+    });
+    
+});
+
+function getParameter(param) {
+    var dados = document.URL; 
+	dados = dados.substr(dados.indexOf(param));  
+	dados = dados.replace(param+"=","");
+	dados = dados.split('%22').join('"');
+	console.log(dados);
+    return dados;
+}
+</script>
+</html>

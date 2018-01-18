@@ -1,0 +1,18 @@
+.popup {
+	margin: 0px;
+	padding: 0px;
+	}
+.popup ul{
+	margin: 0px;
+	padding: 0px;
+	list-style-type: none;
+}
+.popup ul li{
+	padding-right: 10px;
+	padding-left: 10px;
+	width: 100%;
+	height: 25px;
+}	
+.popup ul li:hover {
+	background-color: whitesmoke;
+}

@@ -1,0 +1,96 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" href="extjs/resources/css/ext-all.css">
+<script type="text/javascript" src="extjs/ext-all.js"></script>
+<script type="text/javascript" src="extjs/locale/ext-lang-pt_BR.js"></script>
+</head>
+<body style="width: 100%; height: 100%;">
+</body>
+<script type="text/javascript">
+Ext.require('Ext.chart.*');
+Ext.require(['Ext.layout.container.Fit', 'Ext.window.MessageBox']);
+
+Ext.define('Acesso', {
+     extend: 'Ext.data.Model',
+     fields: [
+		{name: 'horas', type: 'String'},
+		{name: 'data', type: 'String'},
+        {name: 'site', type: 'String'},
+        {name: 'tempo',  type: 'int'}
+     ]
+	});
+
+Ext.onReady(function () {
+
+	 var store = Ext.create('Ext.data.Store', {
+     model: 'Acesso',
+     data : JSON.parse(getParameter("dados"))
+	});
+    
+	var barra = Ext.create('Ext.chart.Chart', {
+        animate: true,
+        style: 'background:#fff',
+        shadow: false,
+        store: store,
+        axes: [{
+            type: 'Numeric',
+            position: 'bottom',
+            fields: ['tempo'],
+            title: 'Segundos',
+            minimum: 0
+        }, {
+            type: 'Category',
+            position: 'left',
+            fields: ['site'],
+            title: 'Sites Acessados'
+        }],
+        series: [{
+            type: 'bar',
+            axis: 'bottom',
+            label: {
+                display: 'insideEnd',
+                field: 'tempo',
+                orientation: 'horizontal',
+                color: '#333',
+                'text-anchor': 'middle',
+                contrast: true
+            },
+            xField: 'site',
+            yField: ['tempo'],
+         
+            renderer: function(sprite, record, attr, index, store) {
+                var fieldValue = Math.random() * 20 + 10,
+                    value = (record.get('tempo') >> 0) % 5,
+                    color = ['rgb(213, 70, 121)', 
+                             'rgb(44, 153, 201)', 
+                             'rgb(146, 6, 157)', 
+                             'rgb(49, 149, 0)', 
+                             'rgb(249, 153, 0)'][value];
+                             
+                return Ext.apply(attr, {
+                    fill: color
+                });
+            }
+        }]
+    });
+	
+    var panel = Ext.create('Ext.panel.Panel', {
+		width: document.body.style.width,
+		height: document.body.style.height,
+		renderTo: Ext.getBody(),
+		layout: 'fit',
+		items: barra
+	});	
+});
+
+function getParameter(param) {
+    var dados = document.URL; 
+	dados = dados.substr(dados.indexOf(param));  
+	dados = dados.replace(param+"=","");
+	dados = dados.split('%22').join('"');
+	console.log(dados);
+    return dados;
+}
+</script>
+</html>

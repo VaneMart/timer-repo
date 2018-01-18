@@ -1,0 +1,90 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" href="extjs/resources/css/ext-all.css">
+<script type="text/javascript" src="extjs/ext-all.js"></script>
+<script type="text/javascript" src="extjs/locale/ext-lang-pt_BR.js"></script>
+</head>
+<body style="width: 100%; height: 100%;">
+</body>
+<script type="text/javascript">
+
+Ext.require('Ext.chart.*');
+Ext.require(['Ext.layout.container.Fit', 'Ext.window.MessageBox']);
+
+Ext.define('Acesso', {
+     extend: 'Ext.data.Model',
+     fields: [
+		  {name: 'data', type: 'String'},
+         {name: 'site', type: 'String'},
+         {name: 'tempo',  type: 'int'}
+     ]
+});
+
+Ext.onReady(function () {
+	
+	 var store = Ext.create('Ext.data.Store', {
+     model: 'Acesso',
+     data: JSON.parse(getParameter("dados"))
+	 });
+    
+    var pizza = Ext.create('Ext.chart.Chart', {
+        xtype: 'chart',
+        animate: true,
+        store: store,
+        shadow: true,
+        legend: {
+            position: 'right'
+        },
+        insetPadding: 60,
+        theme: 'Base:gradients',
+        series: [{
+            type: 'pie',
+            field: 'tempo',
+            showInLegend: true,
+            donut: false,
+            tips: {
+                trackMouse: true,
+                renderer: function(storeItem, item) {
+                    var total = 0;
+                    store.each(function(rec) {
+                        total += rec.get('tempo');
+                    });
+                    this.setTitle(Math.round(storeItem.get('tempo') / total * 100) + '%');
+                }
+            },
+            highlight: {
+                segment: {
+                    margin: 20
+                }
+            },
+            label: {
+                field: 'site',
+                display: 'rotate',
+                contrast: true,
+                font: '12px Arial'
+            }
+        }]
+    });
+	
+    var panel = Ext.create('Ext.panel.Panel', {
+		width: document.body.style.width,
+		height: document.body.style.height,
+		renderTo: Ext.getBody(),
+		layout: 'fit',
+		items: pizza
+	});
+		
+});
+
+
+function getParameter(param) {
+    var dados = document.URL; 
+	dados = dados.substr(dados.indexOf(param));  
+	dados = dados.replace(param+"=","");
+	dados = dados.split('%22').join('"');
+	console.log(dados);
+    return dados;
+}
+</script>
+</html>
